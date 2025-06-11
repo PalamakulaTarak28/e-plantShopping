@@ -6,52 +6,48 @@ import './CartItem.css';
 const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
-
-  // Calculate total cart amount
+  const cartItem = useSelector(state => state.cart.items)
+  const totalItems = cartItem.reduce((total, item) => total + item.quantity, 0)
+  //console.log(cart)
+  // Calculate total amount for all products in the cart
   const calculateTotalAmount = () => {
     let total = 0;
-    cart.forEach(item => {
-      const price = parseFloat(item.cost.substring(1));
-      total += price * item.quantity;
-    });
-    return total.toFixed(2);
+    let cost;
+    cart.forEach((plant) => {
+        cost = parseInt(plant.cost.replace("$", ""))
+        total += (cost * plant.quantity)
+    })
+    return total
   };
 
-  // Continue Shopping handler
   const handleContinueShopping = (e) => {
-    e.preventDefault();
-    onContinueShopping(e);
+    
+    onContinueShopping(e)
   };
 
-  // Increment quantity
   const handleIncrement = (item) => {
-    dispatch(updateQuantity({ name: item.name, quantity: item.quantity + 1 }));
+    dispatch(updateQuantity({name: item.name, quantity: item.quantity + 1}))
+    console.log(cart)
   };
 
-  // Decrement quantity
   const handleDecrement = (item) => {
-    if (item.quantity > 1) {
-      dispatch(updateQuantity({ name: item.name, quantity: item.quantity - 1 }));
+    if (item.quantity > 0) {
+        dispatch(updateQuantity({name: item.name, quantity: item.quantity - 1}))
     } else {
-      dispatch(removeItem(item.name));
+        dispatch(removeItem(item.name))
     }
   };
 
-  // Remove item from cart
   const handleRemove = (item) => {
-    dispatch(removeItem(item.name));
+    dispatch(removeItem(item.name))
   };
 
-  // Calculate total for each item
+  // Calculate total cost based on quantity for an item
   const calculateTotalCost = (item) => {
-    const price = parseFloat(item.cost.substring(1));
-    return (price * item.quantity).toFixed(2);
+    let cost = item.cost.replace("$", "")
+    return parseInt(cost) * item.quantity
   };
 
-  // Checkout handler (placeholder)
-  const handleCheckoutShopping = (e) => {
-    alert('Functionality to be added for future reference');
-  };
 
   return (
     <div className="cart-container">
@@ -74,10 +70,11 @@ const CartItem = ({ onContinueShopping }) => {
           </div>
         ))}
       </div>
+      <div style={{ marginTop: '20px', color: 'black' }} className='total_cart_amount'></div>
       <div className="continue_shopping_btn">
-        <button className="get-started-button" onClick={handleContinueShopping}>Continue Shopping</button>
+        <button className="get-started-button" onClick={(e) => handleContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1" onClick={handleCheckoutShopping}>Checkout</button>
+        <button className="get-started-button1">Checkout</button>
       </div>
     </div>
   );
